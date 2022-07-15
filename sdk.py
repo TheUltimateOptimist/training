@@ -29,3 +29,7 @@ def insert_finisher(max_reps: int, twice_reps: int, p_id: int):
 def finish_training():
     sql_query = f"UPDATE training set t_end = '{current()}' WHERE t_id = {get_training_id()}"
     Database.get_instance().post(sql_query)
+
+def exercise_statistic(exercise_id: int):
+    sql_query = f"select set_weight, set_repetitions, set_reached_failure, rest from sets left join performances on p_id = set_p_id left join exercises on ex_id = p_ex_id where ex_id = {exercise_id}"
+    table: list[tuple] = Database.get_instance().get(sql_query)
