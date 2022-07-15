@@ -33,20 +33,23 @@ class Table:
         top_bar = "+"
         for length in max_lengths:
             top_bar = top_bar + length * "-" + "-+"
-        print(colored(top_bar, surrounding_color))
+        print(top_bar)
 
         # print column names
-        s = colored("| ", surrounding_color)
-        i = 0
-        for element in column_names:
-            s = s + (f"{colored(element, column_names_color)}" +
-                     (max_lengths[i] - len(element)) * " " + colored("| ", surrounding_color))
-            i = i + 1
+        s = "| "
+        for i,element in enumerate(table[0]):
+            s = s + f"{element}{(max_lengths[i] - len(element))*' '}| "
         print(s)
 
         # print bottomBar
-        print(colored(top_bar, surrounding_color))
+        print(top_bar)
 
+
+
+
+
+
+        
         # print entries
         for i in range(len(table)):
             entry = colored("| ", surrounding_color)
