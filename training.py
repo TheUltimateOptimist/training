@@ -1,7 +1,7 @@
 from exercise import Exercise
-from finisher import Finisher
+from variations.finisher import Finisher
 from sdk import enter_training, finish_training
-from traditional import Traditional
+from variations.traditional import Traditional
 
 def enter(is_alone: bool, is_with_bike: bool, temperature: int):
     enter_training(is_alone, is_with_bike, temperature)
