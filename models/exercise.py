@@ -1,4 +1,4 @@
-from sdk import get_exercise
+from data.sdk import get_exercise
 
 class Exercise:
     def __init__(self, id: int) -> None:

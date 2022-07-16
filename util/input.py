@@ -1,4 +1,4 @@
-from output import print_red
+from util.output import print_red
 
 def get_boolean(message: str):
     while True:
@@ -11,12 +11,11 @@ def get_boolean(message: str):
 
 def get_positive_int(message: str) -> int:
     while True:
-        user_input = input(message)
         try:
+            user_input = input(message)
             result = int(user_input)
+            if result < 0:
+                raise ValueError()
+            return user_input
         except:
             print_red("Deine Eingabe ist ungültig!")
-        if result < 0:
-            print_red("Deine Eingabe ist ungültig!")
-        else:
-            return result

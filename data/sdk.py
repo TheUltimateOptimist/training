@@ -1,4 +1,4 @@
-from database import Database
+from data.database import Database
 from util.time import to_string, current
 
 def get_training_id():
@@ -22,8 +22,8 @@ def enter_training(is_alone: bool, with_bike: bool, temperature: int):
     sql_query = f"INSERT INTO training(t_start, t_alone, t_with_bike, t_temperature) VALUES('{current()}', {str(is_alone)}, {str(with_bike)}, {temperature})"
     Database.get_instance().post(sql_query)
 
-def insert_finisher(max_reps: int, twice_reps: int, p_id: int):
-    sql_query = f"INSERT INTO finishers(f_max, f_twice, f_p_id) VALUES({max_reps},{twice_reps},{p_id})"
+def insert_finisher(weight: int, max_reps: int, twice_weight: int, twice_reps: int, p_id: int):
+    sql_query = f"INSERT INTO finishers(f_weight, f_max, f_twice_weight, f_twice, f_p_id) VALUES({weight}, {max_reps}, {twice_weight}, {twice_reps}, {p_id})"
     Database.get_instance().post(sql_query)
 
 def finish_training():

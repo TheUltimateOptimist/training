@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from exercise import Exercise
-from sdk import insert_performance
+from models.exercise import Exercise
+from data.sdk import insert_performance
 import time
 
 class Performance(ABC):

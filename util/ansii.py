@@ -1,5 +1,5 @@
 import time
-from output import print_green
+from util.output import print_green
 
 def reset():
     delete = "\x1B[2J"

@@ -1,13 +1,13 @@
-from performance import Performance
-from exercise import Exercise
-from set import Set
-from ansii import reset, timer
-from output import print_title, print_green
-from input import get_boolean, get_positive_int
+from models.performance import Performance
+from models.exercise import Exercise
+from models.set import Set
+from util.ansii import reset, timer
+from util.output import print_title, print_green
+from util.input import get_boolean, get_positive_int
 
 class Traditional(Performance):
-    def __init__(self, exercise: Exercise, variation_id: int, sets: int, rest: int) -> None:
-        super().__init__(exercise, variation_id)
+    def __init__(self, exercise: Exercise, sets: int, rest: int) -> None:
+        super().__init__(exercise, 1)
         self.set_count = sets
         self.rest = rest
         self.sets: list[Set] = []
