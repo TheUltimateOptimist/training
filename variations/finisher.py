@@ -1,35 +1,25 @@
 from models.performance import Performance
-from models.exercise import Exercise
-from data.sdk import insert_finisher
-from util.ansii import reset, timer
-from util.output import print_title, print_green, print_red
-from util.input import get_positive_int
+from models.set import Set
+from util.ansii import timer
+from util.output import print_green, print_red
 
 class Finisher(Performance):
-    def __init__(self, exercise: Exercise) -> None:
-        super().__init__(exercise, 2)   
-        self.weight: int = None
-        self.max_reps: int = None
-        self.twice_weight = None
-        self.twice_reps: int = None
+    def __init__(self, exercise_id: int) -> None:
+        super().__init__([exercise_id], 2)   
 
     def perform(self):
-        reset()
-        print_title(self.exercise.name + " Finisher")
-        print("Führe so viele Wiederholungen wie möglich durch!")
-        self.weight = get_positive_int("Gewicht: ")
-        self.max_reps = get_positive_int("Wiederholungen: ")
+        self.start_exercise(
+            self.exercises[0].name + " Finisher",
+            "Führe so viele Wiederholungen wie möglich durch!"
+        )
+        set_one = Set(1, self.exercises[0].id, 0)
+        set_two = Set(2, self.exercises[0].id, 0)
+        self.add_set(set_one, ask_for_failure=False)
         print("")
         print("Führe mindestens doppelt so viele Wiederholungen wie zuvor durch, während der folgende Timer runterläuft!")
         timer(270)
-        self.twice_weight = get_positive_int("Gewicht: ")
-        self.twice_reps = get_positive_int("Wiederholungen: ")
-        if self.twice_reps >= 2*self.max_reps:
-            print_green(f"Du hast den {self.exercise.name} Finisher erfolgreich absolviert!")
+        self.add_set(set_two, ask_for_failure=False)
+        if set_two.reps >= 2*set_one.reps:
+            print_green(f"Du hast den {self.exercises[0].name} Finisher erfolgreich absolviert!")
         else:
-            print_red(f"Du bis an dem {self.exercise.name} Finisher gescheitert!")
-
-
-    def save(self):
-        p_id =  super().save()
-        insert_finisher(self.weight, self.max_reps, self.twice_weight, self.twice_reps, p_id)
+            print_red(f"Du bis an dem {self.exercises[0].name} Finisher gescheitert!")
