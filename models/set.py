@@ -9,5 +9,5 @@ class Set:
         self.reps: int = None
         self.reached_failure: bool = True
 
-    def save(self, performance_id: int, rest: int):
-        insert_set(self.weight, self.number, self.reps, self.reached_failure, performance_id, self.exercise_id, rest)
+    def save(self, performance_id: int):
+        insert_set(self.weight, self.number, self.reps, self.reached_failure, performance_id, self.exercise_id, self.rest)

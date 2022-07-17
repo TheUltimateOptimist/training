@@ -19,5 +19,4 @@ class TorcherOne(Performance):
             if i < len(self.exercises) - 1:
                 timer(30)
             else:
-                self.save()
                 print_green("Du hast das Torcher Workout erfolgreich absolviert!")
