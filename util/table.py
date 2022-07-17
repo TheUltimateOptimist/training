@@ -1,62 +1,59 @@
-from __future__ import annotations
+from typing import Any
 
 
 class Table:
-    @staticmethod
-    def __print_table(table: list[list[str]], show_indices: bool = False):
-        """
-        prints table to the console using the given options
-        :param table: the table to print to the console
-        :param column_names: the names for the columns of table (for the header row)
-        :param column_names_color: color for the column names
-        :param entry_colors: color for entry values of the table
-        :param surrounding_color: color of the table grid
-        :param show_indices: adds indices to the table
-        """
+    def __init__(self, table: list[tuple[Any]], column_names: list[str]) -> None:
+        self.table = table
+        self.column_names = column_names
+        self.max_lengths: list[int] = None
+        self.bar: str = None
+    
+    def print(self, show_indices: bool = False):
         if show_indices:
-            for i,row in enumerate(table):
-                row.reverse()
-                if i == 0:
-                    row.append("")
-                else:
-                    row.append(str(i))
-                row.reverse()
+            self.__add_indices()
+        self.__calculate_lengths()
+        self.__create_bar()
+        print(self.bar)
+        self.__print_column_names()
+        print(self.bar)
+        self.__print_entrys()
+        print(self.bar)
 
-        max_lengths = []
-        for i, row in enumerate(table):
-            for j, value in enumerate(row):
-                if (i != 0 and len(str(value)) > max_lengths[j]) or i == 0:
-                    max_lengths[j] = len(str(value))
+    def __add_indices(self):
+        for i,row in enumerate(self.table):
+            row = list(row)
+            row.insert(0, str(i + 1))
+            row = tuple(row)
+            self.table[i] = row
+        self.column_names.insert(0, "")
 
-        # print table
-        # print top Bar
-        top_bar = "+"
-        for length in max_lengths:
-            top_bar = top_bar + length * "-" + "-+"
-        print(top_bar)
+    def __calculate_lengths(self) -> list[int]:
+        self.max_lengths = []
+        for element in self.column_names:
+            self.max_lengths.append(len(str(element)))
+        for row in self.table:
+            for i, value in enumerate(row):
+                item_length = len(str(value))
+                if item_length > self.max_lengths[i]:
+                    self.max_lengths[i] = item_length
 
-        # print column names
-        s = "| "
-        for i,element in enumerate(table[0]):
-            s = s + f"{element}{(max_lengths[i] - len(element))*' '}| "
-        print(s)
+    def __create_bar(self) -> str:
+        self.bar = "+"
+        for length in self.max_lengths:
+            self.bar += length*"-" + "-+"
 
-        # print bottomBar
-        print(top_bar)
+    def __print_column_names(self):
+        line = "| "
+        for i,element in enumerate(self.column_names):
+            line = line + f"{element}{(self.max_lengths[i] - len(str(element)))*' '}| "
+        print(line)
 
+    def __print_entrys(self):
+        for row in self.table:
+            line = "| "
+            for i, element in enumerate(row):
+                empty_space = (self.max_lengths[i] - len(str(element)))*' '
+                line+=f"{element}{empty_space}| "
+            print(line)
 
-
-
-
-
-        
-        # print entries
-        for i in range(len(table)):
-            entry = colored("| ", surrounding_color)
-            for j in range(len(column_names)):
-                entry = entry + colored(table[i][j], entry_colors[i]) + (
-                        max_lengths[j] - len(table[i][j])) * " " + colored("| ", surrounding_color)
-            print(entry)
-
-        # print end bar
-        print(colored(top_bar, surrounding_color))    
+Table([("hallo", "welt"), ("das Wetter ist", "schön")], ["eins", "zwei"]).print(True)
