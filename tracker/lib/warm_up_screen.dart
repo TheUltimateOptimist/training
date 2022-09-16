@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:tracker/exercise_selection_screen.dart';
+import 'package:tracker/my_timer.dart';
 import 'package:tracker/widgets/app_bar.dart';
-import 'package:tracker/widgets/bottom_navigation_bar.dart';
-import 'dart:async';
 
 import 'package:tracker/widgets/continue_button.dart';
 
 class WarmUpScreen extends StatefulWidget {
-  const WarmUpScreen({Key? key}) : super(key: key);
+  const WarmUpScreen(this.sessionId, {Key? key}) : super(key: key);
+
+  final int sessionId;
 
   @override
   State<WarmUpScreen> createState() => _WarmUpScreenState();
@@ -15,42 +16,19 @@ class WarmUpScreen extends StatefulWidget {
 
 class _WarmUpScreenState extends State<WarmUpScreen> {
   
-  int _seconds = 0;
-  late Timer _t;
+  
 
-  @override
-  void initState() {
-    _t = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _seconds++;
-      });
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _t.cancel();
-    super.dispose();
-  }
-
-  String secondsToText(int seconds) {
-    String minutes = (seconds / 60).floor().toString();
-    if (minutes.length == 1) {
-      minutes = "0$minutes";
-    }
-    String secondsText = (seconds - (seconds / 60).floor() * 60).toString();
-    if (secondsText.length == 1) {
-      secondsText = "0$secondsText";
-    }
-    return "$minutes:$secondsText";
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(floatingActionButton: ContinueButton(() {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ExerciseSelectionScreen(widget.sessionId),
+                  ));
+            }),floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: MyAppBar("WarmUp"),
-      bottomNavigationBar: MyBottomNavigationBar(1),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -62,20 +40,9 @@ class _WarmUpScreenState extends State<WarmUpScreen> {
             ),
             Container(
               margin: EdgeInsets.symmetric(vertical: 30),
-              child: Text(
-                secondsToText(
-                  _seconds,
-                ),
-                style: Theme.of(context).textTheme.headline4,
-              ),
+              child: MyTimer()
             ),
-            ContinueButton(() {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ExerciseSelectionScreen(),
-                  ));
-            })
+            
           ],
         ),
       ),

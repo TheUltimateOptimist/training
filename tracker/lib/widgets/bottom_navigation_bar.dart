@@ -16,7 +16,7 @@ class MyBottomNavigationBar extends StatelessWidget {
             Icon(Icons.trending_up_rounded,
           ), onPressed: (){
             if(index == 1){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  MyHomePage(title: "Statistik"),),);
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>  MyHomePage(title: "Statistik"),),);
             }
           },),
           label: "Statistik",
@@ -26,7 +26,7 @@ class MyBottomNavigationBar extends StatelessWidget {
             Icon(Icons.sports_martial_arts,
           ), onPressed: (){
             if(index == 0){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TrackerScreen(),));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => TrackerScreen(),));
             }
           },),
           label: "Tracking",
