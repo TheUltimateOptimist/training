@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracker/exercise_selection_screen.dart';
 import 'package:tracker/rest_screen.dart';
-import 'package:tracker/tracker_screen.dart';
 import 'package:tracker/widgets/app_bar.dart';
 import 'package:tracker/widgets/continue_button.dart';
 

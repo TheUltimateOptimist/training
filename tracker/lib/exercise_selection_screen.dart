@@ -46,11 +46,18 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                 return ListTile(
                   title: Text(exerciseName),
                   onTap: () async {
-                    String tensionType = await showDialog(
+                    List<dynamic> tensionTypes = await API().getTensionTypes(exerciseId);
+                    final String tensionType;
+                    if(tensionTypes.length == 1){
+                      tensionType = tensionTypes[0];
+                    }
+                    else{
+                      tensionType = await showDialog(
                         context: context,
                         builder: (context) {
-                          return TensionTypeDialog(exerciseId);
+                          return TensionTypeDialog(tensionTypes);
                         });
+                    }
                     int performanceId = await API().startExercise(
                         widget.sessionId, exerciseId, tensionType);
                     // ignore: use_build_context_synchronously
@@ -76,9 +83,9 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
 }
 
 class TensionTypeDialog extends StatefulWidget {
-  const TensionTypeDialog(this.exerciseId, {Key? key}) : super(key: key);
+  const TensionTypeDialog(this.tensionTypes, {Key? key}) : super(key: key);
 
-  final int exerciseId;
+  final List<dynamic> tensionTypes;
 
   @override
   State<TensionTypeDialog> createState() => _TensionTypeDialogState();
@@ -91,23 +98,11 @@ class _TensionTypeDialogState extends State<TensionTypeDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text("Widerstandsart:"),
-      content: FutureBuilder<List<dynamic>>(
-        future: API().getTensionTypes(widget.exerciseId),
-        builder: ((context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return SizedBox(
-              height: 100,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-          return StatefulBuilder(builder: (context, setState) {
-            return Column(
+      content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (snapshot.data!.contains("dumbbell"))
+                if (widget.tensionTypes.contains("dumbbell"))
                   RadioListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text("Hantel"),
@@ -121,7 +116,7 @@ class _TensionTypeDialogState extends State<TensionTypeDialog> {
                       );
                     },
                   ),
-                if (snapshot.data!.contains("barbell"))
+                if (widget.tensionTypes.contains("barbell"))
                   RadioListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text("Langhantel"),
@@ -135,7 +130,7 @@ class _TensionTypeDialogState extends State<TensionTypeDialog> {
                       );
                     },
                   ),
-                if (snapshot.data!.contains("machine"))
+                if (widget.tensionTypes.contains("machine"))
                   RadioListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text("Maschine"),
@@ -149,7 +144,7 @@ class _TensionTypeDialogState extends State<TensionTypeDialog> {
                       );
                     },
                   ),
-                if (snapshot.data!.contains("cable"))
+                if (widget.tensionTypes.contains("cable"))
                   RadioListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text("Kabel"),
@@ -163,7 +158,7 @@ class _TensionTypeDialogState extends State<TensionTypeDialog> {
                       );
                     },
                   ),
-                if (snapshot.data!.contains("time"))
+                if (widget.tensionTypes.contains("time"))
                   RadioListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text("Zeit"),
@@ -178,10 +173,9 @@ class _TensionTypeDialogState extends State<TensionTypeDialog> {
                     },
                   ),
               ],
-            );
-          });
-        }),
-      ),
+            ),
+        
+       
       actions: [
         TextButton(
           onPressed: () {
