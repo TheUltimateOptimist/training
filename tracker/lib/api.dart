@@ -29,8 +29,8 @@ class API {
     return int.parse(response.body);
   }
 
-  Future<void> addSet(int performanceId, int index, double tension, int rest, String? note)async{
-    var response = await http.post(Uri.parse("$urlPrefix/sets/$performanceId"), body: {"index": index.toString(), "tension": tension.toString(), "rest": rest.toString(), "note": note ?? ""});
+  Future<void> addSet(int performanceId, int index, double tension, int rest, double reps, String? note)async{
+    var response = await http.post(Uri.parse("$urlPrefix/sets/$performanceId"), body: {"index": index.toString(), "tension": tension.toString(), "rest": rest.toString(), "note": note ?? "", "reps": reps.toString()});
     if(response.statusCode != 200){
       throw ServerException();
     }

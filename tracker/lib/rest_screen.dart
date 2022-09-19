@@ -45,6 +45,7 @@ class _RestScreenState extends State<RestScreen> {
             if (weightEditingController.text != "" &&
                 repsEditingController.text != "") {
               final weight = double.parse(weightEditingController.text);
+              final reps = double.parse(repsEditingController.text);
               final rest = DateTime.now().difference(_start).inSeconds;
               setState(
                 () {
@@ -52,7 +53,7 @@ class _RestScreenState extends State<RestScreen> {
                 },
               );
               await API().addSet(widget.performanceId, widget.index, weight,
-                  widget.previousRest ?? 0, noteEditingController.text);
+                  widget.previousRest ?? 0, reps, noteEditingController.text);
               // ignore: use_build_context_synchronously
               Navigator.pushReplacement(
                 context,
@@ -82,8 +83,9 @@ class _RestScreenState extends State<RestScreen> {
           if (weightEditingController.text != "" &&
               repsEditingController.text != "") {
             final weight = double.parse(weightEditingController.text);
+            final reps = double.parse(repsEditingController.text);
             await API().addSet(widget.performanceId, widget.index, weight,
-                widget.previousRest ?? 0, noteEditingController.text);
+                widget.previousRest ?? 0, reps, noteEditingController.text);
             // ignore: use_build_context_synchronously
             Navigator.pushReplacement(
               context,
