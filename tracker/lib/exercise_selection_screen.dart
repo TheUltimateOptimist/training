@@ -4,10 +4,12 @@ import 'package:tracker/execution_screen.dart';
 import 'package:tracker/tracker_screen.dart';
 import 'package:tracker/widgets/app_bar.dart';
 
-class ExerciseSelectionScreen extends StatefulWidget {
-  const ExerciseSelectionScreen(this.sessionId, {Key? key}) : super(key: key);
+import 'models/training.dart';
 
-  final int sessionId;
+class ExerciseSelectionScreen extends StatefulWidget {
+  const ExerciseSelectionScreen(this.training, {Key? key}) : super(key: key);
+
+  final Training training;
 
   @override
   State<ExerciseSelectionScreen> createState() =>
@@ -58,18 +60,14 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                           return TensionTypeDialog(tensionTypes);
                         });
                     }
-                    int performanceId = await API().startExercise(
-                        widget.sessionId, exerciseId, tensionType);
+                    
+                    await widget.training.addExercise(exerciseName, exerciseId, tensionType);
                     // ignore: use_build_context_synchronously
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ExecutionScreen(
-                          1,
-                          exerciseName: exerciseName,
-                          performanceId: performanceId,
-                          tensionType: tensionType,
-                          exerciseId: exerciseId,sessionId: widget.sessionId,
+                         widget.training
                         ),
                       ),
                     );

@@ -3,21 +3,25 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class MyTimer extends StatefulWidget {
-  const MyTimer({Key? key}) : super(key: key);
-  
+   MyTimer(this.start,{Key? key}) : super(key: key);
+
+  DateTime? start;
+
   @override
   State<MyTimer> createState() => _MyTimerState();
 }
 
 class _MyTimerState extends State<MyTimer> {
   late Timer _t;
-  int _seconds = 0;
+  late int _seconds;
 
   @override
   void initState() {
+    widget.start ??= DateTime.now();
+    _seconds = DateTime.now().difference(widget.start!).inSeconds;
     _t = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        _seconds++;
+        _seconds = DateTime.now().difference(widget.start!).inSeconds;
       });
     });
     super.initState();

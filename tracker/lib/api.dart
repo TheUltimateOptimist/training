@@ -7,6 +7,7 @@ class ServerException extends Error {}
 
 class API {
   static const urlPrefix = "http://theultimateoptimist.pythonanywhere.com";
+  static const user_name = "Jonathan";
 
   Future<String> index() async{
     var response = await http.get(Uri.parse("$urlPrefix/"),);
@@ -14,7 +15,7 @@ class API {
   }
 
   Future<int> startTraining(double bodyweight) async{
-    var response = await http.post(Uri.parse("$urlPrefix/sessions"), body: {"bodyweight": bodyweight.toString()});
+    var response = await http.post(Uri.parse("$urlPrefix/sessions/$user_name"), body: {"bodyweight": bodyweight.toString()});
     if(response.statusCode != 200){
       throw ServerException();
     }
@@ -37,7 +38,7 @@ class API {
   }
 
   Future<List<dynamic>> getExercises()async{
-    var response = await http.get(Uri.parse("$urlPrefix/exercises"));
+    var response = await http.get(Uri.parse("$urlPrefix/exercises/$user_name"));
     if(response.statusCode != 200){
       throw ServerException();
     }

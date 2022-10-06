@@ -1,30 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:tracker/api.dart';
 import 'package:tracker/execution_screen.dart';
 import 'package:tracker/exercise_selection_screen.dart';
+import 'package:tracker/models/working_set.dart';
 import 'package:tracker/my_timer.dart';
 import 'package:tracker/widgets/app_bar.dart';
 import 'package:tracker/widgets/continue_button.dart';
 
+import 'models/exercise.dart';
+import 'models/training.dart';
+
 class RestScreen extends StatefulWidget {
   const RestScreen(
-    this.index, {
+    this.training, {
     Key? key,
-    required this.exerciseName,
-    required this.exerciseId,
-    required this.performanceId,
-    required this.tensionType,
-    this.previousRest,
-    required this.sessionId,
+    
   }) : super(key: key);
 
-  final String exerciseName;
-  final int exerciseId;
-  final int performanceId;
-  final String tensionType;
-  final int index;
-  final int? previousRest;
-  final int sessionId;
+  final Training training;
 
   @override
   State<RestScreen> createState() => _RestScreenState();
@@ -35,7 +27,16 @@ class _RestScreenState extends State<RestScreen> {
   final TextEditingController repsEditingController = TextEditingController();
   final TextEditingController noteEditingController = TextEditingController();
   bool _isLoading = false;
-  final DateTime _start = DateTime.now();
+  late final Exercise exercise;
+  late final WorkingSet set;
+
+  @override
+  void initState() {
+    exercise = widget.training.exercises.last;
+    set = exercise.sets.last;
+    set.completionDate = DateTime.now();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,28 +45,24 @@ class _RestScreenState extends State<RestScreen> {
           return ContinueButton(() async {
             if (weightEditingController.text != "" &&
                 repsEditingController.text != "") {
-              final weight = double.parse(weightEditingController.text);
-              final reps = double.parse(repsEditingController.text);
-              final rest = DateTime.now().difference(_start).inSeconds;
+              set.tension = double.parse(weightEditingController.text);
+              set.reps = double.parse(repsEditingController.text);
+              set.note = noteEditingController.text;
+              exercise.lastRest = DateTime.now().difference(set.completionDate!).inSeconds;
               setState(
                 () {
                   _isLoading = true;
                 },
               );
-              await API().addSet(widget.performanceId, widget.index, weight,
-                  widget.previousRest ?? 0, reps, noteEditingController.text);
+              await widget.training.finishSet();
+             
+                  
               // ignore: use_build_context_synchronously
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ExecutionScreen(
-                    widget.index + 1,
-                    previousRest: rest,
-                    exerciseName: widget.exerciseName,
-                    performanceId: widget.performanceId,
-                    tensionType: widget.tensionType,
-                    exerciseId: widget.exerciseId,
-                    sessionId: widget.sessionId,
+                   widget.training
                   ),
                 ),
               );
@@ -77,20 +74,21 @@ class _RestScreenState extends State<RestScreen> {
       }),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: MyAppBar(
-        widget.exerciseName,
+       exercise.name,
         showQuit: true,
         onPressed: () async {
           if (weightEditingController.text != "" &&
               repsEditingController.text != "") {
-            final weight = double.parse(weightEditingController.text);
-            final reps = double.parse(repsEditingController.text);
-            await API().addSet(widget.performanceId, widget.index, weight,
-                widget.previousRest ?? 0, reps, noteEditingController.text);
+            set.tension = double.parse(weightEditingController.text);
+            set.reps = double.parse(repsEditingController.text);
+            set.note = noteEditingController.text;
+            exercise.lastRest = DateTime.now().difference(set.completionDate!).inSeconds;
+            await widget.training.finishSet();
             // ignore: use_build_context_synchronously
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ExerciseSelectionScreen(widget.sessionId),
+                builder: (context) => ExerciseSelectionScreen(widget.training),
               ),
             );
           }
@@ -108,7 +106,7 @@ class _RestScreenState extends State<RestScreen> {
             Spacer(
               height: 25,
             ),
-            Text("Satz ${widget.index} Ergebnisse:",
+            Text("Satz ${exercise.sets.length + 1} Ergebnisse:",
                 style: Theme.of(context).textTheme.headline4),
             Spacer(
               height: 10,
@@ -134,7 +132,7 @@ class _RestScreenState extends State<RestScreen> {
             ),
             Expanded(
               child: Center(
-                child: MyTimer(),
+                child: MyTimer(set.completionDate),
               ),
             ),
           ],

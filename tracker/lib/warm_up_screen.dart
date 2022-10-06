@@ -5,10 +5,12 @@ import 'package:tracker/widgets/app_bar.dart';
 
 import 'package:tracker/widgets/continue_button.dart';
 
-class WarmUpScreen extends StatefulWidget {
-  const WarmUpScreen(this.sessionId, {Key? key}) : super(key: key);
+import 'models/training.dart';
 
-  final int sessionId;
+class WarmUpScreen extends StatefulWidget {
+  const WarmUpScreen(this.training, {Key? key}) : super(key: key);
+
+  final Training training;
 
   @override
   State<WarmUpScreen> createState() => _WarmUpScreenState();
@@ -25,7 +27,7 @@ class _WarmUpScreenState extends State<WarmUpScreen> {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ExerciseSelectionScreen(widget.sessionId),
+                    builder: (context) => ExerciseSelectionScreen(widget.training),
                   ));
             }),floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: MyAppBar("WarmUp"),
@@ -40,7 +42,7 @@ class _WarmUpScreenState extends State<WarmUpScreen> {
             ),
             Container(
               margin: EdgeInsets.symmetric(vertical: 30),
-              child: MyTimer()
+              child: MyTimer(widget.training.start)
             ),
             
           ],

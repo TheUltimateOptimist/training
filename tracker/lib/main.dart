@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:tracker/execution_screen.dart';
-import 'package:tracker/exercise_selection_screen.dart';
+import 'package:tracker/data/data.dart';
+import 'package:tracker/models/training.dart';
 import 'package:tracker/widgets/app_bar.dart';
 import 'package:tracker/widgets/bottom_navigation_bar.dart';
 
 void main() {
+  Database().initialize();
   runApp(const MyApp());
 }
 
@@ -19,8 +20,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-     //home: const MyHomePage(title: 'Statistik'),
-     home: ExecutionScreen(1, exerciseName: "Bench Press", exerciseId: 1, performanceId: 16, tensionType: "cable", sessionId: 30)
+     home: Training.revive(),
+     //home: ExecutionScreen(1, exerciseName: "Bench Press", exerciseId: 1, performanceId: 16, tensionType: "cable", sessionId: 30)
     );
   }
 }

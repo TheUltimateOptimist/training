@@ -4,6 +4,8 @@ import 'package:tracker/warm_up_screen.dart';
 import 'package:tracker/widgets/app_bar.dart';
 import 'package:tracker/widgets/bottom_navigation_bar.dart';
 
+import 'models/training.dart';
+
 class TrackerScreen extends StatefulWidget {
   const TrackerScreen({Key? key}) : super(key: key);
 
@@ -49,12 +51,12 @@ class _TrackerScreenState extends State<TrackerScreen> {
                   setState(() {
                     _isLoading = true;
                   });
-                  int sessionId = await API().startTraining(bodyweight);
+                  Training training = await Training.create(bodyweight);
                   // ignore: use_build_context_synchronously
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => WarmUpScreen(sessionId),
+                        builder: (context) => WarmUpScreen(training),
                       ));
                 },
               );
@@ -92,7 +94,8 @@ class _BodyWeightDialogState extends State<BodyWeightDialog> {
             child: Text("Ok"))
       ],
       title: Text("Körpergewicht eingeben:"),
-      content: TextField(controller: textEditingController,
+      content: TextField(
+        controller: textEditingController,
         keyboardType: TextInputType.number,
       ),
     );

@@ -4,37 +4,31 @@ import 'package:tracker/rest_screen.dart';
 import 'package:tracker/widgets/app_bar.dart';
 import 'package:tracker/widgets/continue_button.dart';
 
+import 'models/exercise.dart';
+import 'models/training.dart';
+
 class ExecutionScreen extends StatelessWidget {
   const ExecutionScreen(
-    this.index, {
+    this.training,{
     Key? key,
-    required this.exerciseName,
-    required this.exerciseId,
-    required this.performanceId,
-    this.previousRest,
-    required this.tensionType,
-    required this.sessionId,
+   
   }) : super(key: key);
 
-  final int index;
-  final String exerciseName;
-  final int exerciseId;
-  final int performanceId;
-  final String tensionType;
-  final int? previousRest;
-  final int sessionId;
+  final Training training;
 
   @override
   Widget build(BuildContext context) {
+    final Exercise exercise = training.exercises.last;
+    training.startSet();
     return Scaffold(
       appBar: MyAppBar(
-        exerciseName,
+        exercise.name,
         showQuit: true,
         onPressed: () {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ExerciseSelectionScreen(sessionId),
+              builder: (context) => ExerciseSelectionScreen(training),
             ),
           );
         },
@@ -44,13 +38,7 @@ class ExecutionScreen extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => RestScreen(
-              index,
-              previousRest: previousRest,
-              exerciseId: exerciseId,
-              exerciseName: exerciseName,
-              performanceId: performanceId,
-              tensionType: tensionType,
-              sessionId: sessionId,
+             training
             ),
           ),
         );
@@ -58,7 +46,7 @@ class ExecutionScreen extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Center(
         child: Text(
-          "Führe Satz $index aus!",
+          "Führe Satz ${exercise.sets.length + 1} aus!",
           style: Theme.of(context).textTheme.headline4,
         ),
       ),
