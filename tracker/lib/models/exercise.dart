@@ -1,7 +1,7 @@
 import 'package:tracker/models/working_set.dart';
 
 class Exercise {
-  Exercise(this.id, this.name, this.performanceId, this.tensionType,{this.sets = const [], this.lastRest = 0,});
+  Exercise(this.id, this.name, this.performanceId, this.tensionType,{required this.sets, this.lastRest = 0,});
   final String name;
   final int id;
   final int performanceId;
@@ -9,9 +9,9 @@ class Exercise {
   int lastRest;
   List<WorkingSet> sets;
 
-  static Exercise fromMap(Map<String, dynamic> map) {
+  static Exercise fromMap(dynamic map) {
     List<WorkingSet> sets = List.empty(growable: true);
-    for(Map<String, dynamic> workingSet in map["sets"]){
+    for(dynamic workingSet in map["sets"]){
       sets.add(WorkingSet.fromMap(workingSet ));
     }
     return Exercise(

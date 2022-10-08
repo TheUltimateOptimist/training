@@ -1,4 +1,4 @@
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/training.dart';
 
@@ -10,12 +10,13 @@ class Database{
 
   Database._internal();
 
-  void initialize(){
-    box = Hive.box("data");
+  Future<void> initialize() async{
+    await Hive.initFlutter();
+    box = await Hive.openBox("data_9");
   }
 
   Training? getTraining(){
-    Map<String, dynamic>? training = box.get("training");
+    final training = box.get("training");
     if(training == null){
       return null;
     }

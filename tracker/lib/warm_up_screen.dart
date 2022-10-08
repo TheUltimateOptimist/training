@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracker/exercise_selection_screen.dart';
+import 'package:tracker/models/training_state.dart';
 import 'package:tracker/my_timer.dart';
 import 'package:tracker/widgets/app_bar.dart';
 
@@ -18,12 +19,10 @@ class WarmUpScreen extends StatefulWidget {
 
 class _WarmUpScreenState extends State<WarmUpScreen> {
   
-  
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(floatingActionButton: ContinueButton(() {
+              widget.training.changeState(TrainingState.selectingExercise);
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(

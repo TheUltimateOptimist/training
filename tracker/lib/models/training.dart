@@ -13,7 +13,7 @@ import 'package:tracker/warm_up_screen.dart';
 class Training {
   Training(this.id, this.bodyweight,this.start,
       {this.trainingState = TrainingState.warmingUp, 
-      this.exercises = const []});
+      required this.exercises});
   final int id;
   final double bodyweight;
   final DateTime start;
@@ -22,19 +22,21 @@ class Training {
 
   static Future<Training> create(double bodyweight) async {
     final id = await API().startTraining(bodyweight);
-    return Training(id, bodyweight, DateTime.now());
+    final training = Training(id, bodyweight, DateTime.now(), exercises: List.empty(growable: true));
+    training.save();
+    return training;
   }
 
-  static Training fromMap(Map<String, dynamic> map) {
+  static Training fromMap(dynamic map) {
     final List<Exercise> exercises = List.empty(growable: true);
-    for (Map<String, dynamic> exercise in map["exercises"]) {
+    for (dynamic exercise in map["exercises"]) {
       exercises.add(Exercise.fromMap(exercise));
     }
     return Training(
       map["id"],
       map["bodyweight"],
       map["start"],
-      trainingState: map["trainingState"],
+      trainingState: fromInt(map["trainingState"]),
       exercises: exercises,
     );
   }
@@ -48,14 +50,14 @@ class Training {
       "id": id,
       "bodyweight": bodyweight,
       "start": start,
-      "trainingState": trainingState,
+      "trainingState": toInt(trainingState),
       "exercises": exerciseMaps
     };
   }
 
   Future<void> addExercise(String name, int exerciseId, String tensionType)async{
     final performanceId = await API().startExercise(id, exerciseId, tensionType);
-    exercises.add(Exercise(exerciseId, name, performanceId, tensionType,),);
+    exercises.add(Exercise(exerciseId, name, performanceId, tensionType, sets: List.empty(growable: true)),);
     save();
   }
 
@@ -67,7 +69,8 @@ class Training {
   Future<void> finishSet()async{
     final Exercise exercise = exercises.last;
     final WorkingSet set = exercise.sets.last;
-    await API().addSet(exercise.performanceId, exercise.sets.length + 1, set.tension!,exercise.lastRest, set.reps!, set.note);
+    await API().addSet(exercise.performanceId, exercise.sets.length, set.tension!,exercise.lastRest, set.reps!, set.note);
+    exercise.lastRest = DateTime.now().difference(set.completionDate!).inSeconds;
     save();
   }
 
@@ -97,5 +100,10 @@ class Training {
       default:
         return MyHomePage(title: "Statistik");
     }
+  }
+
+  void changeState(TrainingState newState){
+    trainingState = newState;
+    save();
   }
 }

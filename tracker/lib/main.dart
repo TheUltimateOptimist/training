@@ -4,8 +4,8 @@ import 'package:tracker/models/training.dart';
 import 'package:tracker/widgets/app_bar.dart';
 import 'package:tracker/widgets/bottom_navigation_bar.dart';
 
-void main() {
-  Database().initialize();
+void main() async{
+  await Database().initialize();
   runApp(const MyApp());
 }
 

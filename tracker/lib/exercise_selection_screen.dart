@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tracker/api.dart';
 import 'package:tracker/execution_screen.dart';
+import 'package:tracker/models/training_state.dart';
 import 'package:tracker/tracker_screen.dart';
 import 'package:tracker/widgets/app_bar.dart';
 
@@ -17,6 +18,7 @@ class ExerciseSelectionScreen extends StatefulWidget {
 }
 
 class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +26,7 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
           "Übung wählen:",
           showQuit: true,
           onPressed: () {
+            widget.training.changeState(TrainingState.finished);
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -62,6 +65,7 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                     }
                     
                     await widget.training.addExercise(exerciseName, exerciseId, tensionType);
+                    widget.training.changeState(TrainingState.doingExercise);
                     // ignore: use_build_context_synchronously
                     Navigator.pushReplacement(
                       context,

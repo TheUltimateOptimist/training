@@ -6,8 +6,9 @@ import 'package:tracker/widgets/continue_button.dart';
 
 import 'models/exercise.dart';
 import 'models/training.dart';
+import 'models/training_state.dart';
 
-class ExecutionScreen extends StatelessWidget {
+class ExecutionScreen extends StatefulWidget {
   const ExecutionScreen(
     this.training,{
     Key? key,
@@ -17,18 +18,26 @@ class ExecutionScreen extends StatelessWidget {
   final Training training;
 
   @override
+  State<ExecutionScreen> createState() => _ExecutionScreenState();
+}
+
+class _ExecutionScreenState extends State<ExecutionScreen> {
+  @override
   Widget build(BuildContext context) {
-    final Exercise exercise = training.exercises.last;
-    training.startSet();
+    final Exercise exercise = widget.training.exercises.last;
+    if(widget.training.exercises.last.sets.isEmpty || widget.training.exercises.last.sets.last.completionDate != null){
+      widget.training.startSet();
+    }
     return Scaffold(
       appBar: MyAppBar(
         exercise.name,
         showQuit: true,
         onPressed: () {
+          widget.training.changeState(TrainingState.selectingExercise);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ExerciseSelectionScreen(training),
+              builder: (context) => ExerciseSelectionScreen(widget.training),
             ),
           );
         },
@@ -38,7 +47,7 @@ class ExecutionScreen extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => RestScreen(
-             training
+             widget.training
             ),
           ),
         );
@@ -46,7 +55,7 @@ class ExecutionScreen extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Center(
         child: Text(
-          "Führe Satz ${exercise.sets.length + 1} aus!",
+          "Führe Satz ${exercise.sets.length} aus!",
           style: Theme.of(context).textTheme.headline4,
         ),
       ),

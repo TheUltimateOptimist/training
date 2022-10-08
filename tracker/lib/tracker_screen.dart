@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tracker/api.dart';
 import 'package:tracker/warm_up_screen.dart';
 import 'package:tracker/widgets/app_bar.dart';
 import 'package:tracker/widgets/bottom_navigation_bar.dart';

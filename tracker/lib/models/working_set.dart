@@ -5,7 +5,7 @@ class WorkingSet {
   double? reps;
   String? note;
 
-  static WorkingSet fromMap(Map<String, dynamic> map) {
+  static WorkingSet fromMap(dynamic map) {
     return WorkingSet(
         completionDate: map["completionDate"],
         tension: map["tension"],
