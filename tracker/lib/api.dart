@@ -53,7 +53,19 @@ class API {
     }
     return jsonDecode(response.body);
   }
-  
+
+  Future<List<List<dynamic>>> getLastStats(int exerciseId, String tensionType, int sessionId)async{
+    var response = await http.get(Uri.parse("$urlPrefix/last_stats/$exerciseId/$tensionType/$sessionId"));
+    if(response.statusCode != 200){
+      throw ServerException();
+    }
+    List<List<dynamic>> finalList = List.empty(growable: true);
+    dynamic result = jsonDecode(response.body);
+    for(List<dynamic> row in result){
+      finalList.add(row);
+    }
+    return finalList;
+  }
 }
 
 

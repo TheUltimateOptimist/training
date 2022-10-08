@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracker/api.dart';
 import 'package:tracker/exercise_selection_screen.dart';
 import 'package:tracker/rest_screen.dart';
 import 'package:tracker/widgets/app_bar.dart';
@@ -10,9 +11,8 @@ import 'models/training_state.dart';
 
 class ExecutionScreen extends StatefulWidget {
   const ExecutionScreen(
-    this.training,{
+    this.training, {
     Key? key,
-   
   }) : super(key: key);
 
   final Training training;
@@ -25,7 +25,8 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
   @override
   Widget build(BuildContext context) {
     final Exercise exercise = widget.training.exercises.last;
-    if(widget.training.exercises.last.sets.isEmpty || widget.training.exercises.last.sets.last.completionDate != null){
+    if (widget.training.exercises.last.sets.isEmpty ||
+        widget.training.exercises.last.sets.last.completionDate != null) {
       widget.training.startSet();
     }
     return Scaffold(
@@ -46,19 +47,117 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => RestScreen(
-             widget.training
-            ),
+            builder: (context) => RestScreen(widget.training),
           ),
         );
       }),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: Center(
-        child: Text(
-          "Führe Satz ${exercise.sets.length} aus!",
-          style: Theme.of(context).textTheme.headline4,
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          LastStats(exercise.id, exercise.tensionType, widget.training.id),
+          Expanded(
+            child: Center(
+              child: Text(
+                "Führe Satz ${exercise.sets.length} aus!",
+                style: Theme.of(context).textTheme.headline4,
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+}
+
+class LastStats extends StatelessWidget {
+  const LastStats(this.exerciseId, this.tensionType, this.sessionId,{Key? key})
+      : super(key: key);
+
+  final int exerciseId;
+  final String tensionType;
+  final int sessionId;
+
+  static const TextStyle columnStyle =
+      TextStyle(color: Colors.black, fontSize: 20);
+  static const borderSide = BorderSide(color: Colors.grey);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 15, left: 5, right: 5),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: EdgeInsets.only(bottom: 5),
+            child: Text("Results to beat:", style: TextStyle(fontSize: 20)),
+          ),
+          FutureBuilder<List<dynamic>>(
+              future: API().getLastStats(exerciseId, tensionType, sessionId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return Center(
+                      child: Container(
+                    margin: EdgeInsets.only(top: 30),
+                    child: CircularProgressIndicator(),
+                  ));
+                } else {
+                  return Table(
+                    border: TableBorder(
+                      top: borderSide,
+                      bottom: borderSide,
+                      left: borderSide,
+                      right: borderSide,
+                      horizontalInside: borderSide,
+                      verticalInside: borderSide,
+                    ),
+                    children: [
+                      if(snapshot.data!.isNotEmpty)
+                      TableRow(
+                        children: const [
+                          TableText(
+                            "Index:",
+                            isDescription: true,
+                          ),
+                          TableText("Weight:", isDescription: true),
+                          TableText("Reps", isDescription: true),
+                          TableText("Note:", isDescription: true)
+                        ],
+                      ),
+                      for (List<dynamic> dataRow in snapshot.data!)
+                        TableRow(children: [
+                          for (dynamic value in dataRow)
+                            TableText(value.toString())
+                        ])
+                    ],
+                  );
+                }
+              }),
+        ],
+      ),
+    );
+  }
+}
+
+class TableText extends StatelessWidget {
+  const TableText(this.text, {Key? key, this.isDescription = false})
+      : super(key: key);
+
+  final bool isDescription;
+  final String? text;
+
+  static const descriptionStyle = TextStyle(color: Colors.black, fontSize: 20);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        margin: EdgeInsets.only(
+          left: 5,
+          top: 5,
+        ),
+        child:
+            Text(text ?? "", style: isDescription ? descriptionStyle : null));
   }
 }

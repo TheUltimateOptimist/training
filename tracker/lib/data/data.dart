@@ -12,7 +12,7 @@ class Database{
 
   Future<void> initialize() async{
     await Hive.initFlutter();
-    box = await Hive.openBox("data_9");
+    box = await Hive.openBox("data_12");
   }
 
   Training? getTraining(){
