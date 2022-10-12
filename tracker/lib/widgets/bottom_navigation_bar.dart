@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracker/main.dart';
+import 'package:tracker/stats_screen.dart';
 import 'package:tracker/tracker_screen.dart';
 
 class MyBottomNavigationBar extends StatelessWidget {
@@ -16,7 +16,7 @@ class MyBottomNavigationBar extends StatelessWidget {
             Icon(Icons.trending_up_rounded,
           ), onPressed: (){
             if(index == 1){
-              Navigator.push(context, MaterialPageRoute(builder: (context) =>  MyHomePage(title: "Statistik"),),);
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>  StatsScreen(),),);
             }
           },),
           label: "Statistik",

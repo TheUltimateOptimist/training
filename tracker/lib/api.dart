@@ -66,13 +66,24 @@ class API {
     }
     return finalList;
   }
-}
 
+  Future<void> removePerformance(int performanceId) async{
+    var response = await http.post(Uri.parse("$urlPrefix/performances/remove/$performanceId"));
+     if(response.statusCode != 200){
+      throw ServerException();
+    }
+  }
 
-void main() async {
-//  print(await API().startTraining(64.4));
-//  print(await API().startExercise(3, 1, "barbell"));
-//  await API().addSet(1, 1, 23.2, 30);
-//print(await(API().getExercises()));
-//print(await API().getTensionTypes(1));
+  Future<List<List<dynamic>>> getExerciseHistory(int exerciseId, String tensionType)async{
+    var response = await http.get(Uri.parse("$urlPrefix/sets/history/$exerciseId/$tensionType"));
+    if(response.statusCode != 200){
+      throw ServerException();
+    }
+    List<List<dynamic>> finalList = List.empty(growable: true);
+    dynamic result = jsonDecode(response.body);
+    for(List<dynamic> row in result){
+      finalList.add(row);
+    }
+    return finalList;
+  }
 }

@@ -33,8 +33,15 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
       appBar: MyAppBar(
         exercise.name,
         showQuit: true,
-        onPressed: () {
+        onPressed: () async {
+          final Exercise exercise = widget.training.exercises.last;
+          if (exercise.sets.length == 1 &&
+              exercise.sets.last.completionDate == null) {
+            await API().removePerformance(exercise.performanceId);
+            widget.training.exercises.remove(exercise);
+          }
           widget.training.changeState(TrainingState.selectingExercise);
+          // ignore: use_build_context_synchronously
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -72,7 +79,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
 }
 
 class LastStats extends StatelessWidget {
-  const LastStats(this.exerciseId, this.tensionType, this.sessionId,{Key? key})
+  const LastStats(this.exerciseId, this.tensionType, this.sessionId, {Key? key})
       : super(key: key);
 
   final int exerciseId;
@@ -104,37 +111,76 @@ class LastStats extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   ));
                 } else {
-                  return Table(
-                    border: TableBorder(
-                      top: borderSide,
-                      bottom: borderSide,
-                      left: borderSide,
-                      right: borderSide,
-                      horizontalInside: borderSide,
-                      verticalInside: borderSide,
-                    ),
-                    children: [
-                      if(snapshot.data!.isNotEmpty)
-                      TableRow(
-                        children: const [
-                          TableText(
-                            "Index:",
-                            isDescription: true,
-                          ),
-                          TableText("Weight:", isDescription: true),
-                          TableText("Reps", isDescription: true),
-                          TableText("Note:", isDescription: true)
-                        ],
-                      ),
-                      for (List<dynamic> dataRow in snapshot.data!)
-                        TableRow(children: [
-                          for (dynamic value in dataRow)
-                            TableText(value.toString())
-                        ])
-                    ],
-                  );
+                  return StatsTable(snapshot.data!);
                 }
               }),
+        ],
+      ),
+    );
+  }
+}
+
+class StatsTable extends StatelessWidget {
+  const StatsTable(this.data, {Key? key}) : super(key: key);
+
+  static const TextStyle columnStyle =
+      TextStyle(color: Colors.black, fontSize: 20);
+  static const borderSide = BorderSide(color: Colors.grey);
+  final List<dynamic> data;
+
+  List<TableRow> getTableRows(List<dynamic> data) {
+    List<TableRow> result = List.empty(growable: true);
+    for (int i = 0; i < data.length; i++) {
+      if (i != 0 && data[i][0] == 1) {
+        result.add(
+          TableRow(
+            children: [for (int i = 0; i < 4; i++) TableText("")],
+            decoration: BoxDecoration(
+              color: Colors.black,
+            ),
+          ),
+        );
+      }
+      result.add(
+        TableRow(
+          children: [
+            for (dynamic value in data[i])
+              TableText(
+                value.toString(),
+              ),
+          ],
+        ),
+      );
+    }
+    return result;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Table(
+        border: TableBorder(
+          top: borderSide,
+          bottom: borderSide,
+          left: borderSide,
+          right: borderSide,
+          horizontalInside: borderSide,
+          verticalInside: borderSide,
+        ),
+        children: [
+          if (data.isNotEmpty)
+            TableRow(
+              children: const [
+                TableText(
+                  "Index:",
+                  isDescription: true,
+                ),
+                TableText("Weight:", isDescription: true),
+                TableText("Reps", isDescription: true),
+                TableText("Note:", isDescription: true)
+              ],
+            ),
+          ...getTableRows(data)
         ],
       ),
     );

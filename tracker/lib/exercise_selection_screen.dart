@@ -18,7 +18,6 @@ class ExerciseSelectionScreen extends StatefulWidget {
 }
 
 class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,52 +34,73 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
             );
           },
         ),
-        body: FutureBuilder<List<dynamic>>(
-          future: API().getExercises(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                String exerciseName = snapshot.data![index][1];
-                int exerciseId = snapshot.data![index][0];
-                return ListTile(
-                  title: Text(exerciseName),
-                  onTap: () async {
-                    List<dynamic> tensionTypes = await API().getTensionTypes(exerciseId);
-                    final String tensionType;
-                    if(tensionTypes.length == 1){
-                      tensionType = tensionTypes[0];
-                    }
-                    else{
-                      tensionType = await showDialog(
-                        context: context,
-                        builder: (context) {
-                          return TensionTypeDialog(tensionTypes);
-                        });
-                    }
-                    
-                    await widget.training.addExercise(exerciseName, exerciseId, tensionType);
-                    widget.training.changeState(TrainingState.doingExercise);
-                    // ignore: use_build_context_synchronously
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ExecutionScreen(
-                         widget.training
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
+        body: ExerciseSelectionListView(
+          (exerciseName, exerciseId, tensionType) async {
+            await widget.training
+                .addExercise(exerciseName, exerciseId, tensionType);
+            widget.training.changeState(TrainingState.doingExercise);
+            // ignore: use_build_context_synchronously
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ExecutionScreen(widget.training),
+              ),
             );
           },
         ));
+  }
+}
+
+class ExerciseSelectionListView extends StatefulWidget {
+  const ExerciseSelectionListView(this.onPressed, {Key? key}) : super(key: key);
+
+  final Future<void> Function(
+      String exerciseName, int exerciseId, String tensionType) onPressed;
+
+  @override
+  State<ExerciseSelectionListView> createState() =>
+      _ExerciseSelectionListViewState();
+}
+
+class _ExerciseSelectionListViewState extends State<ExerciseSelectionListView> {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<dynamic>>(
+      future: API().getExercises(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return ListView.builder(
+          itemCount: snapshot.data!.length,
+          itemBuilder: (context, index) {
+            String exerciseName = snapshot.data![index][1];
+            int exerciseId = snapshot.data![index][0];
+            return ListTile(
+              title: Text(exerciseName),
+              onTap: () async {
+                List<dynamic> tensionTypes =
+                    await API().getTensionTypes(exerciseId);
+                final String tensionType;
+                if (tensionTypes.length == 1) {
+                  tensionType = tensionTypes[0];
+                } else {
+                  tensionType = await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return TensionTypeDialog(tensionTypes);
+                      });
+                }
+
+                await widget.onPressed(exerciseName, exerciseId, tensionType);
+              },
+            );
+          },
+        );
+      },
+    );
   }
 }
 
@@ -101,83 +121,81 @@ class _TensionTypeDialogState extends State<TensionTypeDialog> {
     return AlertDialog(
       title: Text("Widerstandsart:"),
       content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (widget.tensionTypes.contains("dumbbell"))
-                  RadioListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text("Hantel"),
-                    value: "dumbbell",
-                    groupValue: _tensionType,
-                    onChanged: (value) {
-                      setState(
-                        () {
-                          _tensionType = value.toString();
-                        },
-                      );
-                    },
-                  ),
-                if (widget.tensionTypes.contains("barbell"))
-                  RadioListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text("Langhantel"),
-                    value: "barbell",
-                    groupValue: _tensionType,
-                    onChanged: (value) {
-                      setState(
-                        () {
-                          _tensionType = value.toString();
-                        },
-                      );
-                    },
-                  ),
-                if (widget.tensionTypes.contains("machine"))
-                  RadioListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text("Maschine"),
-                    value: "machine",
-                    groupValue: _tensionType,
-                    onChanged: (value) {
-                      setState(
-                        () {
-                          _tensionType = value.toString();
-                        },
-                      );
-                    },
-                  ),
-                if (widget.tensionTypes.contains("cable"))
-                  RadioListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text("Kabel"),
-                    value: "cable",
-                    groupValue: _tensionType,
-                    onChanged: (value) {
-                      setState(
-                        () {
-                          _tensionType = value.toString();
-                        },
-                      );
-                    },
-                  ),
-                if (widget.tensionTypes.contains("time"))
-                  RadioListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text("Zeit"),
-                    value: "time",
-                    groupValue: _tensionType,
-                    onChanged: (value) {
-                      setState(
-                        () {
-                          _tensionType = value.toString();
-                        },
-                      );
-                    },
-                  ),
-              ],
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.tensionTypes.contains("dumbbell"))
+            RadioListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text("Hantel"),
+              value: "dumbbell",
+              groupValue: _tensionType,
+              onChanged: (value) {
+                setState(
+                  () {
+                    _tensionType = value.toString();
+                  },
+                );
+              },
             ),
-        
-       
+          if (widget.tensionTypes.contains("barbell"))
+            RadioListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text("Langhantel"),
+              value: "barbell",
+              groupValue: _tensionType,
+              onChanged: (value) {
+                setState(
+                  () {
+                    _tensionType = value.toString();
+                  },
+                );
+              },
+            ),
+          if (widget.tensionTypes.contains("machine"))
+            RadioListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text("Maschine"),
+              value: "machine",
+              groupValue: _tensionType,
+              onChanged: (value) {
+                setState(
+                  () {
+                    _tensionType = value.toString();
+                  },
+                );
+              },
+            ),
+          if (widget.tensionTypes.contains("cable"))
+            RadioListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text("Kabel"),
+              value: "cable",
+              groupValue: _tensionType,
+              onChanged: (value) {
+                setState(
+                  () {
+                    _tensionType = value.toString();
+                  },
+                );
+              },
+            ),
+          if (widget.tensionTypes.contains("time"))
+            RadioListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text("Zeit"),
+              value: "time",
+              groupValue: _tensionType,
+              onChanged: (value) {
+                setState(
+                  () {
+                    _tensionType = value.toString();
+                  },
+                );
+              },
+            ),
+        ],
+      ),
       actions: [
         TextButton(
           onPressed: () {

@@ -8,6 +8,7 @@ import 'package:tracker/models/exercise.dart';
 import 'package:tracker/models/training_state.dart';
 import 'package:tracker/models/working_set.dart';
 import 'package:tracker/rest_screen.dart';
+import 'package:tracker/tracker_screen.dart';
 import 'package:tracker/warm_up_screen.dart';
 
 class Training {
@@ -98,7 +99,7 @@ class Training {
           }
         }
       default:
-        return MyHomePage(title: "Statistik");
+        return TrackerScreen();
     }
   }
 
