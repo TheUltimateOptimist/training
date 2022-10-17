@@ -64,7 +64,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          LastStats(exercise.id, exercise.tensionType, widget.training.id),
+          ConstrainedBox(constraints: BoxConstraints(maxHeight: 400,),child: LastStats(exercise.id, exercise.tensionType, widget.training.id)),
           Container(
             margin: EdgeInsets.only(left: 5, top: 15),
             child: ElevatedButton(
@@ -94,6 +94,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               ),
             ),
           ),
+         SizedBox(height: 65)
         ],
       ),
     );
@@ -114,30 +115,32 @@ class LastStats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 15, left: 5, right: 5),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: EdgeInsets.only(bottom: 5),
-            child: Text("Results to beat:", style: TextStyle(fontSize: 20)),
+        margin: EdgeInsets.only(top: 15, left: 5, right: 5),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: EdgeInsets.only(bottom: 5),
+                child: Text("Results to beat:", style: TextStyle(fontSize: 20)),
+              ),
+              FutureBuilder<List<dynamic>>(
+                  future: API().getLastStats(exerciseId, tensionType, sessionId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return Center(
+                          child: Container(
+                        margin: EdgeInsets.only(top: 30),
+                        child: CircularProgressIndicator(),
+                      ));
+                    } else {
+                      return StatsTable(snapshot.data!);
+                    }
+                  }),
+            ],
           ),
-          FutureBuilder<List<dynamic>>(
-              future: API().getLastStats(exerciseId, tensionType, sessionId),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return Center(
-                      child: Container(
-                    margin: EdgeInsets.only(top: 30),
-                    child: CircularProgressIndicator(),
-                  ));
-                } else {
-                  return StatsTable(snapshot.data!);
-                }
-              }),
-        ],
-      ),
+        ),
     );
   }
 }
