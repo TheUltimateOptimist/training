@@ -3,6 +3,7 @@ import 'package:tracker/api.dart';
 import 'package:tracker/exercise_selection_screen.dart';
 import 'package:tracker/exercise_stats_screen.dart';
 import 'package:tracker/rest_screen.dart';
+import 'package:tracker/widgets/all_results_button.dart';
 import 'package:tracker/widgets/app_bar.dart';
 import 'package:tracker/widgets/continue_button.dart';
 
@@ -65,27 +66,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ConstrainedBox(constraints: BoxConstraints(maxHeight: 400,),child: LastStats(exercise.id, exercise.tensionType, widget.training.id)),
-          Container(
-            margin: EdgeInsets.only(left: 5, top: 15),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ExerciseStatsScreen(
-                      exercise.name,
-                      exercise.id,
-                      exercise.tensionType,
-                      showBottomNavBar: false,
-                    ),
-                  ),
-                );
-              },
-              child: Text(
-                "All Results",
-              ),
-            ),
-          ),
+          AllResultsButton(exercise),
           Expanded(
             child: Center(
               child: Text(

@@ -4,6 +4,7 @@ import 'package:tracker/exercise_selection_screen.dart';
 import 'package:tracker/models/training_state.dart';
 import 'package:tracker/models/working_set.dart';
 import 'package:tracker/my_timer.dart';
+import 'package:tracker/widgets/all_results_button.dart';
 import 'package:tracker/widgets/app_bar.dart';
 import 'package:tracker/widgets/continue_button.dart';
 
@@ -160,6 +161,7 @@ class _RestScreenState extends State<RestScreen> {
                 widget.training.save();
               },
             ),
+            AllResultsButton(exercise),
             Expanded(
               child: Center(
                 child: MyTimer(set.completionDate),
